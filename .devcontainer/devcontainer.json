@@ -1,0 +1,27 @@
+{
+    "name": "PPP C++",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "runArgs": [
+        "--network=host"
+    ],
+    "containerEnv": {
+        "http_proxy": "${localEnv:http_proxy}",
+        "https_proxy": "${localEnv:https_proxy}",
+        "HTTP_PROXY": "${localEnv:http_proxy}",
+        "HTTPS_PROXY": "${localEnv:https_proxy}"
+    },
+    "remoteUser": "vscode",
+    "postCreateCommand": "./init.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "llvm-vs-code-extensions.vscode-clangd"
+            ],
+            "settings": {
+                "http.proxy": "${localEnv:https_proxy}"
+            }
+        }
+    }
+}

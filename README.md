@@ -2,11 +2,11 @@
 
 ## Init environment
 
-```bash
-git clone https://github.com/timeofmei/ppp.git
-cd ppp
-./init.sh # Works on linux, compiles std and PPP modules
-```
+Install and start Docker on the host, then install the **Dev Containers** extension in VS Code.
+
+Open the repository in VS Code and run **Dev Containers: Reopen in Container**.
+The container installs the required C++ toolchain and runs `init.sh` automatically
+to compile the `std` and `PPP` modules.
 
 ## Compile some program
 

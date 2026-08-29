@@ -1,20 +1,12 @@
-if command -v apt-get >/dev/null 2>&1; then
-    sudo apt-get update
-    sudo apt-get install -y curl build-essential clang clangd
-elif command -v dnf >/dev/null 2>&1; then
-    sudo dnf install -y curl gcc-c++ make clang clang-tools-extra
-elif command -v yum >/dev/null 2>&1; then
-    sudo yum install -y curl gcc-c++ make clang clang-tools-extra
-elif command -v zypper >/dev/null 2>&1; then
-    sudo zypper --non-interactive install curl gcc-c++ make clang clang-tools
-elif command -v pacman >/dev/null 2>&1; then
-    sudo pacman -S --needed --noconfirm curl base-devel clang
-elif command -v yay >/dev/null 2>&1; then
-    yay -S --needed --noconfirm curl base-devel clang
-else
-    echo "unsupported Linux package manager" >&2
-    exit 1
-fi
+#!/usr/bin/env bash
+set -euo pipefail
+
+for tool in curl g++ clang++; do
+    command -v "$tool" >/dev/null || {
+        echo "$tool is required; run this project in its Dev Container" >&2
+        exit 1
+    }
+done
 
 mkdir -p PPP
 
@@ -27,7 +19,7 @@ mkdir -p .modules
 
 modules_json=$(g++ -print-file-name=libstdc++.modules.json)
 if [ ! -f "$modules_json" ]; then
-    echo "libstdc++ standard modules require GCC 15 or newer" >&2
+    echo "libstdc++ standard modules require GCC 15 or newer; rebuild the Dev Container" >&2
     exit 1
 fi
 
