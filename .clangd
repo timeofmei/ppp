@@ -1,5 +1,8 @@
+If:
+  PathMatch: PPP/PPP\.ixx
 CompileFlags:
+  Remove:
+    - -fmodule-file=PPP=.modules/PPP.pcm
   Add:
-    - -std=c++23
-    - -IPPP
-    - -fprebuilt-module-path=.modules
+    - -x
+    - c++-module
