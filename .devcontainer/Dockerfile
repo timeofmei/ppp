@@ -1,5 +1,6 @@
-FROM mcr.microsoft.com/devcontainers/cpp:ubuntu26.04
+FROM debian:forky-slim
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends clangd \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends build-essential ca-certificates clang clangd curl git \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --uid 1000 --shell /bin/bash vscode
