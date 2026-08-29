@@ -11,6 +11,8 @@ Code for [PPP3e](https://www.stroustrup.com/programming.html). Uses a Dev Contai
 ## Compile and run a program
 
 ```bash
-clang++ -std=c++23 -IPPP -fprebuilt-module-path=.modules c1/hello.cpp .modules/std.o .modules/PPP.o -o c1/hello.out
+clang++ -std=c++23 -IPPP -fprebuilt-module-path=.modules \
+    c1/hello.cpp .modules/std.o .modules/PPP.o \
+    -o c1/hello.out
 c1/hello.out
 ```
