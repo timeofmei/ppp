@@ -6,3 +6,11 @@ CompileFlags:
   Add:
     - -x
     - c++-module
+
+---
+If:
+  PathMatch: c[0-9]+/.*\.cpp
+Diagnostics:
+  Suppress:
+    - module_unimported_use_header
+    - module_unimported_use
