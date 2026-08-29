@@ -17,10 +17,16 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "llvm-vs-code-extensions.vscode-clangd"
+                "llvm-vs-code-extensions.vscode-clangd",
+                "formulahendry.code-runner"
             ],
             "settings": {
-                "http.proxy": "${localEnv:https_proxy}"
+                "http.proxy": "${localEnv:https_proxy}",
+                "code-runner.executorMap": {
+                    "cpp": "clang++ -std=c++23 -IPPP -fprebuilt-module-path=.modules $fullFileName .modules/std.o .modules/PPP.o -o $dir$fileNameWithoutExt.out && $dir$fileNameWithoutExt.out"
+                },
+                "code-runner.clearPreviousOutput": true,
+                "code-runner.runInTerminal": true
             }
         }
     }
