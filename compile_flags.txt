@@ -1,4 +1,6 @@
 -std=c++23
+-Wall
+-Wextra
 -IPPP
 -fmodule-file=std=.modules/std.pcm
 -fmodule-file=PPP=.modules/PPP.pcm

@@ -23,7 +23,7 @@
             ],
             "settings": {
                 "code-runner.executorMap": {
-                    "cpp": "clang++ -std=c++23 -IPPP -fprebuilt-module-path=.modules $fullFileName .modules/std.o .modules/PPP.o -o $dir$fileNameWithoutExt.out && $dir$fileNameWithoutExt.out"
+                    "cpp": "clang++ -std=c++23 -Wall -Wextra -IPPP -fprebuilt-module-path=.modules $fullFileName .modules/std.o .modules/PPP.o -o $dir$fileNameWithoutExt.out && $dir$fileNameWithoutExt.out"
                 },
                 "code-runner.clearPreviousOutput": true,
                 "code-runner.runInTerminal": true

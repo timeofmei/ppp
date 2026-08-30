@@ -41,7 +41,7 @@ The correct setup method depends on your platform:
 ## Compile and run a program
 
 ```bash
-clang++ -std=c++23 -IPPP -fprebuilt-module-path=.modules \
+clang++ -std=c++23 -Wall -Wextra -IPPP -fprebuilt-module-path=.modules \
     c1/hello.cpp .modules/std.o .modules/PPP.o \
     -o c1/hello.out
 c1/hello.out
