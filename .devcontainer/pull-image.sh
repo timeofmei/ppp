@@ -6,9 +6,9 @@
 # directly (avoiding blocked/slow access from China).
 #
 # Acquisition order (fallback cascade):
-#   1) Already present locally  -> exit (idempotent, no re-pull on restart)
-#   2) Connectivity test: curl https://www.google.com
+#   1) Connectivity test: curl https://www.google.com
 #      reachable -> DOMESTIC=0, use official source; unreachable -> DOMESTIC=1, use mirrors
+#   2) Already present locally  -> exit (idempotent, no re-pull on restart)
 #   3) docker pull official     -> only when DOMESTIC=0
 #   4) docker pull mirror       -> try each mirror + docker tag to rename
 #   5) Manual fallback (no docker pull):
@@ -35,13 +35,7 @@ log() { echo "[pull-forky] $*"; }
 # Dockerfile's COPY never fails, even if we exit early below
 : > "$SCRIPT_DIR/apt-mirror.txt"
 
-# ---------- 1) Already present locally ----------
-if docker image inspect "$TAG" >/dev/null 2>&1; then
-  log "$TAG already present, skipping"
-  exit 0
-fi
-
-# ---------- 2) Connectivity test: google reachable -> official, otherwise domestic ----------
+# ---------- 1) Connectivity test: google reachable -> official, otherwise domestic ----------
 DOMESTIC=0
 if curl -fsS -m 8 -o /dev/null https://www.google.com; then
   log "External network reachable: use official source"
@@ -57,6 +51,12 @@ if [ "$DOMESTIC" = "1" ]; then
 else
   : > "$SCRIPT_DIR/apt-mirror.txt"
   log "Marked official apt source (no switch)"
+fi
+
+# ---------- 2) Already present locally ----------
+if docker image inspect "$TAG" >/dev/null 2>&1; then
+  log "$TAG already present, skipping"
+  exit 0
 fi
 
 # Portable timeout wrapper (macOS has no GNU timeout)
