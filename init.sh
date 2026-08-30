@@ -3,10 +3,36 @@ set -euo pipefail
 
 for tool in curl g++ clang++; do
     command -v "$tool" >/dev/null || {
-        echo "$tool is required; run this project in its Dev Container" >&2
+        echo "$tool is required (see README)" >&2
         exit 1
     }
 done
+
+# Detect toolchain versions (README: requires GCC 15+ and Clang 21+)
+gpp_version=$(g++ --version 2>/dev/null | head -n1 | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)
+clang_version=$(clang++ --version 2>/dev/null | head -n1 | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)
+
+# version_ge A B: succeeds if A >= B (dotted version strings)
+version_ge() {
+    [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | head -n1)" = "$2" ]
+}
+
+check_min_version() {
+    local pretty="$1" version="$2" min="$3"
+    if [ -z "$version" ]; then
+        echo "Could not determine $pretty version" >&2
+        return 1
+    fi
+    if ! version_ge "$version" "$min"; then
+        echo "$pretty $version is too old; PPP requires $pretty $min or newer (see README)" >&2
+        return 1
+    fi
+    echo "  $pretty $version (requires $pretty $min+)"
+}
+
+echo "Detected toolchain:"
+check_min_version "g++" "$gpp_version" 15
+check_min_version "clang++" "$clang_version" 21
 
 mkdir -p PPP
 
