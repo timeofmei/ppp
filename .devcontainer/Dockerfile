@@ -11,6 +11,7 @@ RUN MIRROR=$(cat /tmp/apt-mirror.txt) \
        fi \
     && apt-get update \
     && apt-get install -y --no-install-recommends build-essential ca-certificates clang clangd curl git \
+    python3 python3-pip python3-venv nodejs \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 1000 --shell /bin/bash vscode \
     && printf "PS1='\\$ '\n" >> /home/vscode/.bashrc
