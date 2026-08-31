@@ -2,7 +2,10 @@
 set -euo pipefail
 
 
-for tool in curl clang++; do
+PPP_CXX=clang++
+command -v clang++-23 >/dev/null && PPP_CXX=clang++-23
+
+for tool in curl "$PPP_CXX"; do
     command -v "$tool" >/dev/null || {
         echo "$tool is required (see README)" >&2
         exit 1
@@ -10,7 +13,7 @@ for tool in curl clang++; do
 done
 
 # Detect toolchain version (README: requires Clang 23+)
-clang_version=$(clang++ --version 2>/dev/null | head -n1 | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)
+clang_version=$("$PPP_CXX" --version 2>/dev/null | head -n1 | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)
 
 # version_ge A B: succeeds if A >= B (dotted version strings)
 version_ge() {
@@ -31,7 +34,7 @@ check_min_version() {
 }
 
 echo "Detected toolchain:"
-check_min_version "clang++" "$clang_version" 23
+check_min_version "$PPP_CXX" "$clang_version" 23
 
 mkdir -p PPP
 
@@ -42,7 +45,7 @@ sed -i 's/operator\[\](size_t/operator[](std::size_t/g' PPP/PPP_support.h
 
 mkdir -p .modules
 
-modules_json="$(clang++ -print-resource-dir)/../../libc++.modules.json"
+modules_json="$("$PPP_CXX" -print-resource-dir)/../../libc++.modules.json"
 if [ ! -f "$modules_json" ]; then
     echo "libc++ standard modules are missing; install the libc++ 23 development package" >&2
     exit 1
@@ -59,9 +62,9 @@ if [ ! -f "$std_source" ] || [ ! -f "$std_compat_source" ]; then
     exit 1
 fi
 
-clang++ -std=c++23 -stdlib=libc++ -x c++-module -c "$std_source" -Wno-reserved-module-identifier -fmodule-output=.modules/std.pcm -o .modules/std.o
-clang++ -std=c++23 -stdlib=libc++ -x c++-module -c "$std_compat_source" -Wno-reserved-module-identifier -fprebuilt-module-path=.modules -fmodule-output=.modules/std.compat.pcm -o .modules/std.compat.o
-clang++ -std=c++23 -stdlib=libc++ -x c++-module -c PPP/PPP.ixx -fprebuilt-module-path=.modules -fmodule-output=.modules/PPP.pcm -o .modules/PPP.o
+"$PPP_CXX" -std=c++23 -stdlib=libc++ -x c++-module -c "$std_source" -Wno-reserved-module-identifier -fmodule-output=.modules/std.pcm -o .modules/std.o
+"$PPP_CXX" -std=c++23 -stdlib=libc++ -x c++-module -c "$std_compat_source" -Wno-reserved-module-identifier -fprebuilt-module-path=.modules -fmodule-output=.modules/std.compat.pcm -o .modules/std.compat.o
+"$PPP_CXX" -std=c++23 -stdlib=libc++ -x c++-module -c PPP/PPP.ixx -fprebuilt-module-path=.modules -fmodule-output=.modules/PPP.pcm -o .modules/PPP.o
 
 # Install the workspace keybinding into VS Code's per-user keybindings.json.
 # VS Code ignores workspace-level keybindings (.vscode/keybindings.json), so a

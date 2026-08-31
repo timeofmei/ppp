@@ -3,7 +3,6 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
-    "initializeCommand": "bash .devcontainer/pull-image.sh",
     "runArgs": [
         "--network=host"
     ],
