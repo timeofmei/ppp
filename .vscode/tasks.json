@@ -34,6 +34,10 @@
           "message": 5
         }
       },
+      "presentation": {
+        "echo": false,
+        "showReuseMessage": false
+      },
       "detail": "Compile the current .cpp file against the std/PPP modules"
     },
     {
@@ -51,9 +55,12 @@
       "problemMatcher": [],
       "detail": "Compile then run the current .cpp file",
       "presentation": {
+        "echo": false,
         "reveal": "always",
         "panel": "shared",
-        "focus": true
+        "focus": true,
+        "showReuseMessage": false,
+        "clear": true
       }
     }
   ]
