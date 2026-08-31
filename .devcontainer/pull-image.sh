@@ -6,12 +6,12 @@
 # directly (avoiding blocked/slow access from China).
 #
 # Acquisition order (fallback cascade):
+#   0) Already present locally  -> exit immediately (idempotent; no network on reopen)
 #   1) Connectivity test: curl https://www.google.com
 #      reachable -> DOMESTIC=0, use official source; unreachable -> DOMESTIC=1, use mirrors
-#   2) Already present locally  -> exit (idempotent, no re-pull on restart)
-#   3) docker pull official     -> only when DOMESTIC=0
-#   4) docker pull mirror       -> try each mirror + docker tag to rename
-#   5) Manual fallback (no docker pull):
+#   2) docker pull official     -> only when DOMESTIC=0
+#   3) docker pull mirror       -> try each mirror + docker tag to rename
+#   4) Manual fallback (no docker pull):
 #      use curl against the registry HTTP API to fetch index/manifest/config/rootfs layer,
 #      assemble a docker load-able archive and import it (only requires curl, no skopeo/crane)
 #   Also: every run writes .devcontainer/apt-mirror.txt (empty=official apt source,
@@ -30,6 +30,13 @@ DEBIAN_APT_MIRROR="mirrors.tuna.tsinghua.edu.cn"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 log() { echo "[pull-forky] $*"; }
+
+# ---------- 0) Fast path: image already present locally -> nothing to do ----------
+# Runs before any network probe so a normal reconnect is near-instant.
+if docker image inspect "$TAG" >/dev/null 2>&1; then
+  log "$TAG already present, skipping"
+  exit 0
+fi
 
 # Ensure the marker file always exists (default: official apt source) so the
 # Dockerfile's COPY never fails, even if we exit early below
@@ -53,12 +60,6 @@ else
   log "Marked official apt source (no switch)"
 fi
 
-# ---------- 2) Already present locally ----------
-if docker image inspect "$TAG" >/dev/null 2>&1; then
-  log "$TAG already present, skipping"
-  exit 0
-fi
-
 # Portable timeout wrapper (macOS has no GNU timeout)
 run_pull() {
   if command -v timeout >/dev/null 2>&1; then
@@ -68,7 +69,7 @@ run_pull() {
   fi
 }
 
-# ---------- 3) Official source (only when external network is reachable) ----------
+# ---------- 2) Official source (only when external network is reachable) ----------
 if [ "$DOMESTIC" = "0" ]; then
   log "Trying docker pull $TAG (official source)..."
   if run_pull docker pull "$TAG"; then
@@ -80,7 +81,7 @@ else
   log "Skipping official source, starting from domestic mirrors"
 fi
 
-# ---------- 4) Domestic mirror docker pull + tag ----------
+# ---------- 3) Domestic mirror docker pull + tag ----------
 for m in $MIRRORS; do
   log "Trying docker pull $m/library/$IMAGE:$IMAGE_TAG ..."
   if run_pull docker pull "$m/library/$IMAGE:$IMAGE_TAG"; then
@@ -91,7 +92,7 @@ for m in $MIRRORS; do
   fi
 done
 
-# ---------- 5) Manual fallback: curl download + docker load ----------
+# ---------- 4) Manual fallback: curl download + docker load ----------
 log "All docker pulls failed, falling back to manual download + docker load ..."
 command -v curl >/dev/null 2>&1 || { log "ERROR: curl not found, cannot download manually"; exit 1; }
 
