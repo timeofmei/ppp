@@ -4,17 +4,16 @@ This guide is for Windows users who do **not** want to use Docker. It sets up a 
 
 The project needs:
 
-- **GCC 15+** — provides `libstdc++.modules.json`, the source of the `std` / `std.compat` C++ standard library modules.
-- **Clang 21+** — compiles those modules into `.pcm` / `.o` files (and `clangd` for IDE support).
+- **Clang 23+ and libc++ 23** — provide and compile the `std` / `std.compat` modules (and include `clangd` for IDE support).
 - **bash + GNU tools + curl** — needed by `init.sh`.
 
-Two routes are described below. **MSYS2** mirrors the Docker/Linux workflow almost exactly and is recommended. **Alternative: WSL2** has almost the same environment to run the code.
+Two routes are described below. Native MSYS2 works once its Clang/libc++ packages reach version 23; WSL2 is the currently available option when they have not.
 
 ---
 
 ## MSYS2 (recommended, mirrors the Linux workflow)
 
-MSYS2 is a Linux-style environment for Windows. It ships a recent GCC **and** Clang together (GCC 16.x and Clang 22.x as of this writing), plus bash, curl, and GNU sed — so `init.sh` runs unchanged.
+MSYS2 is a Linux-style environment for Windows. Its Clang and libc++ packages must be version 23 or newer for this project. If the current MSYS2 repository still provides version 22, use the Dev Container or WSL2 until it updates.
 
 ### 1. Install MSYS2
 
@@ -25,22 +24,20 @@ Download and install from <https://www.msys2.org/>, then open the **"MSYS2 UCRT6
 ```bash
 pacman -Syu                      # update; on first run, close and reopen the terminal, then run it once more
 pacman -S --needed \
-    mingw-w64-ucrt-x86_64-gcc \
     mingw-w64-ucrt-x86_64-clang \
     mingw-w64-ucrt-x86_64-clang-tools-extra \
+    mingw-w64-ucrt-x86_64-libc++ \
     mingw-w64-ucrt-x86_64-lld \
     git curl
 ```
 
-- `gcc` provides libstdc++ and `libstdc++.modules.json` (GCC 15+).
-- `clang` compiles the modules (Clang 21+); `clang-tools-extra` provides `clangd`.
+- `clang` and `libc++` provide and compile the standard library modules; `clang-tools-extra` provides `clangd`.
 - `lld` is the linker used for the module objects.
 
 Verify:
 
 ```bash
-g++ --version      # GCC 15+ (e.g. 16.2.0)
-clang++ --version  # Clang 21+ (e.g. 22.1.8)
+clang++ --version  # Clang 23+ (e.g. 23.1.0)
 ```
 
 > [!IMPORTANT]
@@ -70,7 +67,7 @@ cd ppp
 ### 4. Compile and run a program
 
 ```bash
-clang++ -std=c++23 -IPPP -fprebuilt-module-path=.modules \
+clang++ -std=c++23 -stdlib=libc++ -IPPP -fprebuilt-module-path=.modules \
     c1/hello.cpp .modules/std.o .modules/PPP.o \
     -o c1/hello.out
 ./c1/hello.out
@@ -79,7 +76,7 @@ clang++ -std=c++23 -IPPP -fprebuilt-module-path=.modules \
 ### 5. Use it from VS Code
 
 1. Install the **clangd** extension.
-2. Make the MSYS2 **UCRT64** shell the default integrated terminal (Terminal → New Terminal → profile: MSYS2 UCRT64), **or** add `C:\msys64\ucrt64\bin` to your Windows `PATH` so `clang++`/`g++` also work from cmd/PowerShell.
+2. Make the MSYS2 **UCRT64** shell the default integrated terminal (Terminal → New Terminal → profile: MSYS2 UCRT64), **or** add `C:\msys64\ucrt64\bin` to your Windows `PATH` so `clang++` works from cmd/PowerShell.
 
 `compile_flags.txt` and `.clangd` already contain the module flags, so clangd understands the code out of the box.
 
@@ -87,4 +84,4 @@ clang++ -std=c++23 -IPPP -fprebuilt-module-path=.modules \
 
 ## Alternative: WSL2 (not native Windows, but nearly zero setup)
 
-If you only want to avoid Docker and are fine with a Linux environment, [WSL2](https://learn.microsoft.com/windows/wsl/install) is the lowest-friction option: install a recent distro (e.g. Ubuntu 26.04+ or Arch), then follow the **"Set up the environment on recent Linux distributions"** section in the [README](./README.md) — just install clang 21+ and gcc 15+, and run `./init.sh`.
+If you only want to avoid Docker and are fine with a Linux environment, [WSL2](https://learn.microsoft.com/windows/wsl/install) is the lowest-friction option: install a recent distro, then follow the **"Set up the environment on recent Linux distributions"** section in the [README](../README.md) — install Clang 23, clangd, and the libc++ 23 development packages, then run `./init.sh`.

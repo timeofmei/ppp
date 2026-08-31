@@ -21,7 +21,7 @@
 # The image to fetch (edit these to use a different one; the rest of the
 # script and the Dockerfile's FROM reference $TAG)
 IMAGE="debian"
-IMAGE_TAG="forky-slim"
+IMAGE_TAG="sid-slim"
 TAG="$IMAGE:$IMAGE_TAG"
 MIRRORS="dockerproxy.net docker.1ms.run docker.m.daocloud.io"
 # Domestic Debian apt mirror (change here to use a different one)
@@ -29,7 +29,7 @@ DEBIAN_APT_MIRROR="mirrors.tuna.tsinghua.edu.cn"
 # Directory of this script (.devcontainer/), resolved regardless of cwd
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-log() { echo "[pull-forky] $*"; }
+log() { echo "[pull-debian] $*"; }
 
 # ---------- 0) Fast path: image already present locally -> nothing to do ----------
 # Runs before any network probe so a normal reconnect is near-instant.

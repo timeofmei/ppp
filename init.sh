@@ -1,25 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Platform detection: on macOS, Homebrew's clang defaults to libc++ and needs
-# explicit flags to use Homebrew gcc's libstdc++ (the source of the std modules).
-# Elsewhere these flags are empty. macOS also needs GNU sed (brew install gnu-sed)
-# on PATH for the sed -i below.
-if [ "$(uname -s)" = "Darwin" ]; then
-    STDLIB_FLAGS=(-stdlib=libstdc++ --gcc-install-dir="$(brew --prefix)/opt/gcc")
-else
-    STDLIB_FLAGS=()
-fi
 
-for tool in curl g++ clang++; do
+for tool in curl clang++; do
     command -v "$tool" >/dev/null || {
         echo "$tool is required (see README)" >&2
         exit 1
     }
 done
 
-# Detect toolchain versions (README: requires GCC 15+ and Clang 21+)
-gpp_version=$(g++ --version 2>/dev/null | head -n1 | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)
+# Detect toolchain version (README: requires Clang 23+)
 clang_version=$(clang++ --version 2>/dev/null | head -n1 | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)
 
 # version_ge A B: succeeds if A >= B (dotted version strings)
@@ -41,8 +31,7 @@ check_min_version() {
 }
 
 echo "Detected toolchain:"
-check_min_version "g++" "$gpp_version" 15
-check_min_version "clang++" "$clang_version" 21
+check_min_version "clang++" "$clang_version" 23
 
 mkdir -p PPP
 
@@ -53,18 +42,26 @@ sed -i 's/operator\[\](size_t/operator[](std::size_t/g' PPP/PPP_support.h
 
 mkdir -p .modules
 
-modules_json=$(g++ -print-file-name=libstdc++.modules.json)
+modules_json="$(clang++ -print-resource-dir)/../../libc++.modules.json"
 if [ ! -f "$modules_json" ]; then
-    echo "libstdc++ standard modules require GCC 15 or newer; rebuild the Dev Container" >&2
+    echo "libc++ standard modules are missing; install the libc++ 23 development package" >&2
     exit 1
 fi
 
-std_source=$(awk -F'"' '$4 ~ /\/std\.cc$/ { print $4; exit }' "$modules_json")
-std_compat_source=$(awk -F'"' '$4 ~ /\/std\.compat\.cc$/ { print $4; exit }' "$modules_json")
+modules_dir=$(dirname "$modules_json")
+std_source=$(awk -F'"' '$4 ~ /\/std\.cppm$/ { print $4; exit }' "$modules_json")
+std_compat_source=$(awk -F'"' '$4 ~ /\/std\.compat\.cppm$/ { print $4; exit }' "$modules_json")
 
-clang++ -std=c++23 "${STDLIB_FLAGS[@]}" -x c++-module -c "$std_source" -Wno-reserved-module-identifier -fmodule-output=.modules/std.pcm -o .modules/std.o
-clang++ -std=c++23 "${STDLIB_FLAGS[@]}" -x c++-module -c "$std_compat_source" -Wno-reserved-module-identifier -fprebuilt-module-path=.modules -fmodule-output=.modules/std.compat.pcm -o .modules/std.compat.o
-clang++ -std=c++23 "${STDLIB_FLAGS[@]}" -x c++-module -c PPP/PPP.ixx -fprebuilt-module-path=.modules -fmodule-output=.modules/PPP.pcm -o .modules/PPP.o
+case "$std_source" in /*) ;; *) std_source="$modules_dir/$std_source" ;; esac
+case "$std_compat_source" in /*) ;; *) std_compat_source="$modules_dir/$std_compat_source" ;; esac
+if [ ! -f "$std_source" ] || [ ! -f "$std_compat_source" ]; then
+    echo "libc++ std/std.compat module sources are missing; reinstall the libc++ 23 development package" >&2
+    exit 1
+fi
+
+clang++ -std=c++23 -stdlib=libc++ -x c++-module -c "$std_source" -Wno-reserved-module-identifier -fmodule-output=.modules/std.pcm -o .modules/std.o
+clang++ -std=c++23 -stdlib=libc++ -x c++-module -c "$std_compat_source" -Wno-reserved-module-identifier -fprebuilt-module-path=.modules -fmodule-output=.modules/std.compat.pcm -o .modules/std.compat.o
+clang++ -std=c++23 -stdlib=libc++ -x c++-module -c PPP/PPP.ixx -fprebuilt-module-path=.modules -fmodule-output=.modules/PPP.pcm -o .modules/PPP.o
 
 # Install the workspace keybinding into VS Code's per-user keybindings.json.
 # VS Code ignores workspace-level keybindings (.vscode/keybindings.json), so a

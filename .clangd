@@ -14,3 +14,4 @@ Diagnostics:
   Suppress:
     - module_unimported_use_header
     - module_unimported_use
+    - no_template_suggest

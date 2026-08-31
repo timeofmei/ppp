@@ -2,11 +2,11 @@
 
 Code for [PPP3e](https://www.stroustrup.com/programming.html). This project provides an easy-to-set-up C++23 learning environment in a Dev Container. It works on Linux, macOS, and WSL with Docker. If you are on Windows or macOS and have no intrest in installing Docker, see [WINDOWS_SETUP](doc/WINDOWS_SETUP.md) [MACOS_SETUP](doc/MACOS_SETUP.md). Otherwise, follow the steps below.
 
-Every environment in this repository deliberately uses the **same C++ standard library (libstdc++)** — provided by GCC 15+ and compiled by Clang 21+ — so the `std` / `PPP` modules and your code behave identically on all platforms.
+Every environment in this repository deliberately uses the **same C++ standard library (libc++ 23)**, compiled by Clang 23+, so the `std` / `PPP` modules and your code behave identically on all platforms.
 
 ## Set up the environment on recent Linux distributions
 
-If on Ubuntu 26.04+, Debian 14+ or Arch Linux (check if **clang 21+** and **gcc 15+** is available), then no Docker is required. Just install clang 21 and gcc 15, and run `./init.sh`. The `std` and `PPP` modules are compiled.
+If your Linux distribution provides **Clang 23+**, `clangd`, and the matching libc++ development package, Docker is not required. Install them and run `./init.sh`; the `std`, `std.compat`, and `PPP` modules are compiled locally.
 
 ## Set up the environment
 
@@ -43,7 +43,7 @@ The correct setup method depends on your platform:
 ## Compile and run a program
 
 ```bash
-clang++ -std=c++23 -Wall -Wextra -IPPP -fprebuilt-module-path=.modules \
+clang++ -std=c++23 -stdlib=libc++ -Wall -Wextra -IPPP -fprebuilt-module-path=.modules \
     c1/hello.cpp .modules/std.o .modules/PPP.o \
     -o c1/hello.out
 c1/hello.out
