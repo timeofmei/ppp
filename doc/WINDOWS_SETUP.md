@@ -7,27 +7,27 @@ The project needs:
 - **Clang 23+ and its matching libc++** — provide and compile the `std` / `std.compat` modules (and include `clangd` for IDE support).
 - **bash + GNU tools + curl** — needed by `init.sh`.
 
-Two routes are described below. Native MSYS2 works once its Clang/libc++ packages reach version 23; WSL2 is the currently available option when they have not.
+Two routes are described below: native MSYS2 with its CLANG64 environment, or WSL2.
 
 ---
 
 ## MSYS2 (recommended, mirrors the Linux workflow)
 
-MSYS2 is a Linux-style environment for Windows. Its Clang and libc++ packages must be version 23 or newer for this project. If the current MSYS2 repository still provides version 22, use the Dev Container or WSL2 until it updates.
+MSYS2 is a Linux-style environment for Windows. Its Clang and libc++ packages must be version 23 or newer for this project.
 
 ### 1. Install MSYS2
 
-Download and install from <https://www.msys2.org/>, then open the **"MSYS2 UCRT64"** terminal (not the default MSYS shell, and not mingw64).
+Download and install from <https://www.msys2.org/>, then open the **"MSYS2 CLANG64"** terminal (not the default MSYS, UCRT64, or MINGW64 shell).
 
 ### 2. Update MSYS2 and install the toolchain
 
 ```bash
 pacman -Syu                      # update; on first run, close and reopen the terminal, then run it once more
 pacman -S --needed \
-    mingw-w64-ucrt-x86_64-clang \
-    mingw-w64-ucrt-x86_64-clang-tools-extra \
-    mingw-w64-ucrt-x86_64-libc++ \
-    mingw-w64-ucrt-x86_64-lld \
+    mingw-w64-clang-x86_64-clang \
+    mingw-w64-clang-x86_64-clang-tools-extra \
+    mingw-w64-clang-x86_64-libc++ \
+    mingw-w64-clang-x86_64-lld \
     git curl
 ```
 
@@ -41,7 +41,7 @@ clang++ --version  # Clang 23+ (e.g. 23.1.0)
 ```
 
 > [!IMPORTANT]
-> Stay in the **UCRT64** environment for everything. Do not mix `ucrt64` and `mingw64` packages/tools — their runtime libraries are incompatible.
+> Stay in the **CLANG64** environment for everything. Do not mix `clang64`, `ucrt64`, and `mingw64` packages or object files; each environment has its own toolchain and library prefix.
 
 ### 3. Get the code and build the modules
 
@@ -77,7 +77,7 @@ PPP_CXX=$(<.modules/compiler.path)
 ### 5. Use it from VS Code
 
 1. Install the **clangd** extension.
-2. Make the MSYS2 **UCRT64** shell the default integrated terminal (Terminal → New Terminal → profile: MSYS2 UCRT64), **or** add `C:\msys64\ucrt64\bin` to your Windows `PATH` so `clang++` works from cmd/PowerShell.
+2. Make the MSYS2 **CLANG64** shell the default integrated terminal (Terminal → New Terminal → profile: MSYS2 CLANG64), **or** add `C:\msys64\clang64\bin` to your Windows `PATH` so `clang++` works from cmd/PowerShell.
 
 `compile_flags.txt` and `.clangd` already contain the module flags, so clangd understands the code out of the box.
 
