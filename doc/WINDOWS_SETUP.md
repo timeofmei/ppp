@@ -4,7 +4,7 @@ This guide is for Windows users who do **not** want to use Docker. It sets up a 
 
 The project needs:
 
-- **Clang 23+ and libc++ 23** — provide and compile the `std` / `std.compat` modules (and include `clangd` for IDE support).
+- **Clang 23+ and its matching libc++** — provide and compile the `std` / `std.compat` modules (and include `clangd` for IDE support).
 - **bash + GNU tools + curl** — needed by `init.sh`.
 
 Two routes are described below. Native MSYS2 works once its Clang/libc++ packages reach version 23; WSL2 is the currently available option when they have not.
@@ -67,7 +67,8 @@ cd ppp
 ### 4. Compile and run a program
 
 ```bash
-clang++ -std=c++23 -stdlib=libc++ -IPPP -fprebuilt-module-path=.modules \
+PPP_CXX=$(<.modules/compiler.path)
+"$PPP_CXX" -std=c++23 -stdlib=libc++ -IPPP -fprebuilt-module-path=.modules \
     c1/hello.cpp .modules/std.o .modules/PPP.o \
     -o c1/hello.out
 ./c1/hello.out
@@ -84,4 +85,4 @@ clang++ -std=c++23 -stdlib=libc++ -IPPP -fprebuilt-module-path=.modules \
 
 ## Alternative: WSL2 (not native Windows, but nearly zero setup)
 
-If you only want to avoid Docker and are fine with a Linux environment, [WSL2](https://learn.microsoft.com/windows/wsl/install) is the lowest-friction option: install a recent distro, then follow the **"Set up the environment on recent Linux distributions"** section in the [README](../README.md) — install Clang 23, clangd, and the libc++ 23 development packages, then run `./init.sh`.
+If you only want to avoid Docker and are fine with a Linux environment, [WSL2](https://learn.microsoft.com/windows/wsl/install) is the lowest-friction option: install a recent distro, then follow the **"Set up the environment on recent Linux distributions"** section in the [README](../README.md) — install Clang 23+, clangd, and the matching libc++ development package, then run `./init.sh`.

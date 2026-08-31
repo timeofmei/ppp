@@ -4,8 +4,7 @@ This guide is for macOS users who do **not** want to use Docker. It sets up a na
 
 The project needs:
 
-- **Clang 23+ and libc++ 23** — provide and compile the `std` / `std.compat` modules (and include `clangd` for IDE support).
-- **GNU sed + curl + bash** — `init.sh` uses a GNU `sed -i` form that macOS's BSD `sed` does not support.
+- **Clang 23+ and its matching libc++** — provide and compile the `std` / `std.compat` modules (and include `clangd` for IDE support).
 
 > [!WARNING]
 > Apple's own Clang (from Xcode Command Line Tools) is **too old** for this project (it tracks roughly LLVM 16/17). Install Homebrew LLVM instead.
@@ -30,18 +29,17 @@ xcode-select --install
 ## 3. Install the toolchain
 
 ```bash
-brew install llvm gnu-sed
+brew install llvm
 ```
 
-- `llvm` → Clang 23, libc++ 23, and `clangd`.
-- `gnu-sed` → GNU `sed` with `-i` semantics. **Required** — without it, `init.sh` fails at the `sed -i` step because BSD `sed` has a different `-i` syntax.
+- `llvm` → the current Clang, matching libc++, and `clangd`.
 
 ## 4. Put the Homebrew tools first on `PATH`
 
-Homebrew's `llvm` is "keg-only", so it is not linked into the default bin directory. Add it (and gnu-sed) ahead of Apple's tools. On Apple Silicon Homebrew lives in `/opt/homebrew`, on Intel in `/usr/local` — `$(brew --prefix)` handles both. Add to `~/.zshrc`:
+Homebrew's `llvm` is "keg-only", so it is not linked into the default bin directory. Add it ahead of Apple's tools. On Apple Silicon Homebrew lives in `/opt/homebrew`, on Intel in `/usr/local` — `$(brew --prefix)` handles both. Add to `~/.zshrc`:
 
 ```bash
-export PATH="$(brew --prefix)/opt/llvm/bin:$(brew --prefix)/opt/gnu-sed/libexec/gnubin:$PATH"
+export PATH="$(brew --prefix)/opt/llvm/bin:$PATH"
 ```
 
 > [!IMPORTANT]
@@ -50,7 +48,7 @@ export PATH="$(brew --prefix)/opt/llvm/bin:$(brew --prefix)/opt/gnu-sed/libexec/
 Verify in a new terminal:
 
 ```bash
-clang++ --version  # clang version 23.x
+clang++ --version  # clang version 23 or newer
 ```
 
 ## 5. Build the modules
@@ -68,14 +66,15 @@ This project builds the standard library modules from Homebrew LLVM's libc++. `i
 ```
 
 > [!TIP]
-> If Homebrew advances past Clang 23 and the existing module files become incompatible, rebuild them with `./init.sh` or install `llvm@23` and put it first on `PATH`.
+> After Homebrew upgrades LLVM, rerun `./init.sh`; it rebuilds the modules and records the compiler used by the VS Code build task.
 
 ## 6. Compile and run a program
 
 Use the same standard and library options for every program:
 
 ```bash
-clang++ -std=c++23 -stdlib=libc++ \
+PPP_CXX=$(<.modules/compiler.path)
+"$PPP_CXX" -std=c++23 -stdlib=libc++ \
     -IPPP -fprebuilt-module-path=.modules \
     c1/hello.cpp .modules/std.o .modules/PPP.o -o c1/hello.out
 ./c1/hello.out

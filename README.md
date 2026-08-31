@@ -2,7 +2,7 @@
 
 Code for [PPP3e](https://www.stroustrup.com/programming.html). This project provides an easy-to-set-up C++23 learning environment in a Dev Container. It works on Linux, macOS, and WSL with Docker. If you are on Windows or macOS and have no intrest in installing Docker, see [WINDOWS_SETUP](doc/WINDOWS_SETUP.md) [MACOS_SETUP](doc/MACOS_SETUP.md). Otherwise, follow the steps below.
 
-Every environment in this repository deliberately uses the **same C++ standard library (libc++ 23)**, compiled by Clang 23+, so the `std` / `PPP` modules and your code behave identically on all platforms.
+The Dev Container pins **Clang and libc++ 23**. Native installations use the newest Clang 23+ available on `PATH` and its matching libc++; `init.sh` records that compiler so the modules and your code are always built by the same version.
 
 ## Set up the environment on recent Linux distributions
 
@@ -43,7 +43,8 @@ The correct setup method depends on your platform:
 ## Compile and run a program
 
 ```bash
-clang++ -std=c++23 -stdlib=libc++ -Wall -Wextra -IPPP -fprebuilt-module-path=.modules \
+PPP_CXX=$(<.modules/compiler.path)
+"$PPP_CXX" -std=c++23 -stdlib=libc++ -Wall -Wextra -IPPP -fprebuilt-module-path=.modules \
     c1/hello.cpp .modules/std.o .modules/PPP.o \
     -o c1/hello.out
 c1/hello.out
