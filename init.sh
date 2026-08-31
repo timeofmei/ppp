@@ -40,7 +40,8 @@ mkdir -p PPP
 curl -fL https://www.stroustrup.com/PPP.h -o PPP/PPP.h
 curl -fL https://www.stroustrup.com/PPP_support.h -o PPP/PPP_support.h
 curl -fL https://www.stroustrup.com/PPP.ixx -o PPP/PPP.ixx
-awk '{gsub(/operator\[\]\(size_t/, "operator[](std::size_t"); print}' PPP/PPP_support.h > PPP/PPP_support.h.tmp
+awk 'BEGIN {print "#ifndef PPP_EXPORT\nimport std;\n#define PPP_EXPORT\n#endif\n"}
+     {gsub(/operator\[\]\(size_t/, "operator[](std::size_t"); print}' PPP/PPP_support.h > PPP/PPP_support.h.tmp
 mv PPP/PPP_support.h.tmp PPP/PPP_support.h
 
 mkdir -p .modules

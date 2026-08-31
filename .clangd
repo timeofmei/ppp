@@ -1,4 +1,12 @@
 If:
+  PathMatch: PPP/.*\.h
+CompileFlags:
+  Add:
+    - -x
+    - c++
+
+---
+If:
   PathMatch: PPP/PPP\.ixx
 CompileFlags:
   Remove:
