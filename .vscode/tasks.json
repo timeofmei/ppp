@@ -7,6 +7,12 @@
       "command": "clang++",
       "args": [
         "-std=c++23",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
         "-IPPP",
         "-fprebuilt-module-path=.modules",
         "${relativeFile}",

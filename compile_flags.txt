@@ -1,4 +1,10 @@
 -std=c++23
+-Wall
+-Wextra
+-Wpedantic
+-g
+-fsanitize=address,undefined
+-fno-omit-frame-pointer
 -IPPP
 -fmodule-file=std=.modules/std.pcm
 -fmodule-file=PPP=.modules/PPP.pcm
