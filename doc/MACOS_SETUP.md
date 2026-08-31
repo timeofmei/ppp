@@ -80,7 +80,7 @@ Use the same two flags for every program:
 
 ```bash
 clang++ -std=c++23 -stdlib=libstdc++ --gcc-install-dir="$(brew --prefix)/opt/gcc" \
-    -Wall -Wextra -IPPP -fprebuilt-module-path=.modules \
+    -IPPP -fprebuilt-module-path=.modules \
     c1/hello.cpp .modules/std.o .modules/PPP.o -o c1/hello.out
 ./c1/hello.out
 ```
@@ -90,14 +90,8 @@ clang++ -std=c++23 -stdlib=libstdc++ --gcc-install-dir="$(brew --prefix)/opt/gcc
 
 ## 7. Use it from VS Code
 
-1. Install the **clangd** and **Code Runner** extensions.
+1. Install the **clangd** extension.
 2. `clangd` comes from the `llvm` formula and picks up `compile_flags.txt` and `.clangd` automatically.
-3. Code Runner needs this `executorMap` setting (the only difference from the container is the `--gcc-install-dir` / `-stdlib` flags):
-
-```json
-"code-runner.executorMap": {
-    "cpp": "clang++ -std=c++23 -stdlib=libstdc++ --gcc-install-dir=$(brew --prefix)/opt/gcc -Wall -Wextra -IPPP -fprebuilt-module-path=.modules $fullFileName .modules/std.o .modules/PPP.o -o $dir$fileNameWithoutExt.out && $dir$fileNameWithoutExt.out"
-}
 ```
 
 ---

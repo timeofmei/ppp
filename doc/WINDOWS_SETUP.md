@@ -1,6 +1,6 @@
 # Windows Setup (Native, No Docker)
 
-This guide is for Windows users who do **not** want to use Docker. It sets up a native Windows environment for the PPP3e code in this repository.
+This guide is for Windows users who do **not** want to use Docker. It sets up a Windows environment for the PPP3e code in this repository.
 
 The project needs:
 
@@ -8,16 +8,13 @@ The project needs:
 - **Clang 21+** — compiles those modules into `.pcm` / `.o` files (and `clangd` for IDE support).
 - **bash + GNU tools + curl** — needed by `init.sh`.
 
-Two routes are described below. **Route A (MSYS2)** mirrors the Docker/Linux workflow almost exactly and is recommended. **Route B (Visual Studio / MSVC)** uses Microsoft's toolchain — your source code needs no changes, but the build system is different.
+Two routes are described below. **MSYS2** mirrors the Docker/Linux workflow almost exactly and is recommended. **Alternative: WSL2** has almost the same environment to run the code.
 
 ---
 
-## Route A: MSYS2 (recommended, mirrors the Linux workflow)
+## MSYS2 (recommended, mirrors the Linux workflow)
 
 MSYS2 is a Linux-style environment for Windows. It ships a recent GCC **and** Clang together (GCC 16.x and Clang 22.x as of this writing), plus bash, curl, and GNU sed — so `init.sh` runs unchanged.
-
-> [!NOTE]
-> Why not WinLibs? WinLibs' newest releases (GCC 16.x) ship **without** Clang, and its Clang-bundled releases are older (GCC 14 + Clang 19) — below the required Clang 21. MSYS2 keeps both tools current in a single package repository.
 
 ### 1. Install MSYS2
 
@@ -73,7 +70,7 @@ cd ppp
 ### 4. Compile and run a program
 
 ```bash
-clang++ -std=c++23 -Wall -Wextra -IPPP -fprebuilt-module-path=.modules \
+clang++ -std=c++23 -IPPP -fprebuilt-module-path=.modules \
     c1/hello.cpp .modules/std.o .modules/PPP.o \
     -o c1/hello.out
 ./c1/hello.out
@@ -81,65 +78,13 @@ clang++ -std=c++23 -Wall -Wextra -IPPP -fprebuilt-module-path=.modules \
 
 ### 5. Use it from VS Code
 
-1. Install the **clangd** and **Code Runner** extensions.
+1. Install the **clangd** extension.
 2. Make the MSYS2 **UCRT64** shell the default integrated terminal (Terminal → New Terminal → profile: MSYS2 UCRT64), **or** add `C:\msys64\ucrt64\bin` to your Windows `PATH` so `clang++`/`g++` also work from cmd/PowerShell.
-3. Code Runner needs this `executorMap` setting (the same as the Dev Container):
-
-```json
-"code-runner.executorMap": {
-    "cpp": "clang++ -std=c++23 -Wall -Wextra -IPPP -fprebuilt-module-path=.modules $fullFileName .modules/std.o .modules/PPP.o -o $dir$fileNameWithoutExt.out && $dir$fileNameWithoutExt.out"
-}
-```
 
 `compile_flags.txt` and `.clangd` already contain the module flags, so clangd understands the code out of the box.
 
 ---
 
-## Route B: Visual Studio (MSVC) toolchain
-
-MSVC fully supports C++23 modules and `import std;`. **Your source code needs no changes** — `c1/*.cpp` (`import std;`), `cx/*.cpp` (`#include "PPP.h"` → `import PPP;`), `PPP/PPP.ixx`, and `PPP/PPP_support.h` are all standard C++23 that MSVC accepts.
-
-What changes is the **build setup**, not the code:
-
-| | Clang (Linux / MSYS2) | MSVC |
-| --- | --- | --- |
-| Standard library module | compiled from GCC's `libstdc++.modules.json` via `init.sh` | built into the MSVC STL — `import std;` just works |
-| Module artifacts | `.pcm` + `.o` | `.ifc` + `.obj` |
-| Standard switch | `-std=c++23` | `/std:c++23` |
-| Module flags | `-fmodule-output`, `-fprebuilt-module-path` | `/interface`, `/reference`, `/ifcOutput` |
-| `compile_flags.txt` / `.clangd` | used | not used |
-
-> [!IMPORTANT]
-> Use a **recent Visual Studio 2022 (17.6 or newer, ideally the latest)**. Older versions, and VS 2019, do not support C++23 modules or `import std;` (and early 17.x builds had bugs with `export import std;`).
-
-### Build with the Visual Studio IDE (easiest)
-
-1. Create a Console App project.
-2. Add `PPP/PPP.ixx` (MSVC recognizes `.ixx` as a module interface automatically) and your `.cpp` files.
-3. Project properties → C/C++ → Language → set **C++ Language Standard** to `ISO C++23`, and make sure **Exception Handling** is `/EHsc`.
-4. Build. MSBuild resolves the module dependency graph for you.
-
-### Build on the command line with `cl.exe`
-
-```bat
-:: 1. Compile the PPP module interface
-cl /std:c++23 /EHsc /utf-8 ^
-    /interface PPP\PPP.ixx /ifcOutput .modules\PPP.ifc /Fo.modules\ ^
-    /c PPP\PPP.ixx
-
-:: 2. Compile + link a program (use /reference for every file that imports PPP)
-cl /std:c++23 /EHsc /utf-8 ^
-    /reference PPP=.modules\PPP.ifc ^
-    c1\hello.cpp .modules\PPP.obj
-```
-
-> [!WARNING]
-> - `/EHsc` is required — the PPP code throws exceptions (`error()`, `narrow()`, …).
-> - Expect **warnings, not errors**, from `PPP_support.h` under `/W4` (e.g. C4018 signed/unsigned comparisons, C4296 `i < 0` on an unsigned type). These come from the upstream book code and are harmless.
-> - clangd reads Clang `.pcm` files and **cannot** read MSVC `.ifc` files. With the MSVC toolchain, use the **C/C++ extension** (`ms-vscode.cpptools`) IntelliSense in VS Code, or the built-in IntelliSense in the Visual Studio IDE.
-
----
-
 ## Alternative: WSL2 (not native Windows, but nearly zero setup)
 
-If you only want to avoid Docker and are fine with a Linux environment, WSL2 is the lowest-friction option: install a recent distro (e.g. Ubuntu 26.04+ or Arch), then follow the **"Set up the environment on recent Linux distributions"** section in the [README](./README.md) — just install clang 21+ and gcc 15+, and run `./init.sh`.
+If you only want to avoid Docker and are fine with a Linux environment, [WSL2](https://learn.microsoft.com/windows/wsl/install) is the lowest-friction option: install a recent distro (e.g. Ubuntu 26.04+ or Arch), then follow the **"Set up the environment on recent Linux distributions"** section in the [README](./README.md) — just install clang 21+ and gcc 15+, and run `./init.sh`.
