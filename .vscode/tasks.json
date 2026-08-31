@@ -7,7 +7,7 @@
       "command": "bash",
       "args": [
         "-c",
-        "test -s .modules/compiler.path || { echo 'Run ./init.sh first' >&2; exit 1; }; PPP_CXX=$(<.modules/compiler.path); exec \"$PPP_CXX\" \"$@\"",
+        "exec \"$(<.modules/compiler.path)\" \"$@\"",
         "--",
         "-std=c++23",
         "-stdlib=libc++",
