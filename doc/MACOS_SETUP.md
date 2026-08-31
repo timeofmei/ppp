@@ -92,7 +92,6 @@ clang++ -std=c++23 -stdlib=libstdc++ --gcc-install-dir="$(brew --prefix)/opt/gcc
 
 1. Install the **clangd** extension.
 2. `clangd` comes from the `llvm` formula and picks up `compile_flags.txt` and `.clangd` automatically.
-```
 
 ---
 
