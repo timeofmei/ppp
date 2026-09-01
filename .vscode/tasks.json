@@ -28,6 +28,26 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
+      "windows": {
+        "command": "clang++",
+        "args": [
+          "-std=c++23",
+          "-stdlib=libc++",
+          "-Wall",
+          "-Wextra",
+          "-Wpedantic",
+          "-g",
+          "-fsanitize=address,undefined",
+          "-fno-omit-frame-pointer",
+          "-IPPP",
+          "-fprebuilt-module-path=.modules",
+          "${relativeFile}",
+          ".modules/std.obj",
+          ".modules/PPP.obj",
+          "-o",
+          "${relativeFileDirname}/${fileBasenameNoExtension}.exe"
+        ]
+      },
       "group": {
         "kind": "build",
         "isDefault": true
@@ -71,6 +91,9 @@
         "focus": true,
         "showReuseMessage": false,
         "clear": true
+      },
+      "windows": {
+        "command": "${relativeFileDirname}/${fileBasenameNoExtension}.exe"
       }
     }
   ]

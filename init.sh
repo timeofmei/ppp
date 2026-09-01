@@ -25,7 +25,17 @@ while IFS= read -r candidate; do
         clang_version=$candidate_version
         clang_major=$candidate_major
     fi
-done < <(compgen -c clang++ | grep -E '^clang\+\+(-[0-9]+)?$' | sort -u || true)
+done < <(
+    {
+        compgen -c clang++ | grep -E '^clang\+\+(-[0-9]+)?$' || true
+        if command -v brew >/dev/null; then
+            brew_llvm=$(brew --prefix llvm 2>/dev/null || true)
+            if [ -n "$brew_llvm" ] && [ -x "$brew_llvm/bin/clang++" ]; then
+                printf '%s\n' "$brew_llvm/bin/clang++"
+            fi
+        fi
+    } | sort -u
+)
 
 if [ -z "$PPP_CXX" ]; then
     echo "clang++ 23 or newer is required (see README)" >&2

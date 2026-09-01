@@ -1,8 +1,8 @@
 # Programming: Principles and Practice Using C++ 3e
 
-Code for [PPP3e](https://www.stroustrup.com/programming.html). This project provides an easy-to-set-up C++23 learning environment in a Dev Container. It works on Linux, macOS, and WSL with Docker. If you are on Windows or macOS and have no intrest in installing Docker, see [WINDOWS_SETUP](doc/WINDOWS_SETUP.md) [MACOS_SETUP](doc/MACOS_SETUP.md). Otherwise, follow the steps below.
+Code for [PPP3e](https://www.stroustrup.com/programming.html). This project provides an easy-to-set-up C++23 learning environment in a Dev Container. It works on Linux, macOS, and WSL with Docker. If you are on Windows or macOS and have no interest in installing Docker, see [WINDOWS_SETUP](doc/WINDOWS_SETUP.md) or [MACOS_SETUP](doc/MACOS_SETUP.md). Otherwise, follow the steps below.
 
-The Dev Container pins **Clang and libc++ 23**. Native installations use the newest Clang 23+ available on `PATH` and its matching libc++; `init.sh` records that compiler so the modules and your code are always built by the same version.
+The Dev Container pins **Clang and libc++ 23**. Native installations use the newest Clang 23+ available on `PATH` and its matching libc++; `init.sh` on Linux/macOS and `init.ps1` on Windows record that compiler so the modules and your code are always built by the same version.
 
 ## Set up the environment on recent Linux distributions
 

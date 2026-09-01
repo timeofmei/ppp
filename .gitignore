@@ -2,7 +2,9 @@
 PPP/
 
 *.o
+*.obj
 *.a
 *.out
+*.exe
 
 .devcontainer/apt-mirror.txt
