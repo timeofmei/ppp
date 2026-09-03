@@ -3,13 +3,13 @@ Set-StrictMode -Version Latest
 
 $command = Get-Command clang++.exe -ErrorAction SilentlyContinue
 if (-not $command) {
-    throw "clang++ 23 or newer is required (see doc/WINDOWS_SETUP.md)"
+    throw "clang++ 21 or newer is required (see doc/WINDOWS_SETUP.md)"
 }
 
 $compiler = $command.Source
 $versionLine = (& $compiler --version | Select-Object -First 1)
-if ($versionLine -notmatch "version\s+(\d+)(?:\.\d+)*" -or [int]$Matches[1] -lt 23) {
-    throw "$versionLine is too old; PPP requires clang++ 23 or newer"
+if ($versionLine -notmatch "version\s+(\d+)(?:\.\d+)*" -or [int]$Matches[1] -lt 21) {
+    throw "$versionLine is too old; PPP requires clang++ 21 or newer"
 }
 
 $moduleSources = [IO.Path]::GetFullPath(

@@ -1,6 +1,6 @@
 # Windows Setup (Native, No Docker)
 
-This guide installs a native Windows Clang 23 + libc++ environment for the PPP3e code in this repository. It does not require Docker, WSL, MSYS2, or Visual Studio Build Tools.
+This guide installs a native Windows Clang 21+ and libc++ environment for the PPP3e code in this repository. It does not require Docker, WSL, MSYS2, or Visual Studio Build Tools.
 
 ## 1. Install Scoop
 
@@ -29,7 +29,7 @@ clangd --version
 clang++ -dumpmachine
 ```
 
-The Clang version must be 23 or newer, and the target should be `x86_64-w64-windows-gnu` on a 64-bit Intel/AMD Windows system.
+The Clang version must be 21 or newer, and the target should be `x86_64-w64-windows-gnu` on a 64-bit Intel/AMD Windows system.
 
 ## 3. Configure VS Code
 
