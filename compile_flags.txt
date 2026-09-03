@@ -6,6 +6,4 @@
 -g
 -fsanitize=address,undefined
 -fno-omit-frame-pointer
--IPPP
--fmodule-file=std=.modules/std.pcm
--fmodule-file=PPP=.modules/PPP.pcm
+-I.clangd-include
