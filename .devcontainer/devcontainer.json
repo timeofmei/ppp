@@ -17,8 +17,7 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "llvm-vs-code-extensions.vscode-clangd",
-                "Vizards.deepseek-v4-for-copilot"
+                "llvm-vs-code-extensions.vscode-clangd"
             ],
             "settings": {
             }
