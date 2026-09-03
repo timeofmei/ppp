@@ -45,9 +45,10 @@ fi
 echo "Detected toolchain:"
 echo "  $PPP_CXX $clang_version (requires clang++ 18+)"
 
-mkdir -p PPP
+mkdir -p PPP .clangd-include
 
 curl -fL https://www.stroustrup.com/PPP.h -o PPP/PPP.h
+curl -fL https://www.stroustrup.com/PPPheaders.h -o PPP/PPPheaders.h
 curl -fL https://www.stroustrup.com/PPP_support.h -o PPP/PPP_support.h
 curl -fL https://www.stroustrup.com/PPP.ixx -o PPP/PPP.ixx
 awk 'BEGIN {print "#ifndef PPP_EXPORT\nimport std;\n#define PPP_EXPORT\n#endif\n"}

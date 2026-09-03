@@ -25,8 +25,8 @@ Write-Host "Detected toolchain:"
 Write-Host "  $compiler"
 Write-Host "  $versionLine"
 
-New-Item -ItemType Directory -Force -Path "PPP", ".modules" | Out-Null
-foreach ($name in "PPP.h", "PPP_support.h", "PPP.ixx") {
+New-Item -ItemType Directory -Force -Path "PPP", ".modules", ".clangd-include" | Out-Null
+foreach ($name in "PPP.h", "PPPheaders.h", "PPP_support.h", "PPP.ixx") {
     Invoke-WebRequest -UseBasicParsing "https://www.stroustrup.com/$name" -OutFile "PPP/$name"
 }
 
