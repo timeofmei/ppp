@@ -2,11 +2,11 @@
 
 Code for [PPP3e](https://www.stroustrup.com/programming.html). This project provides an easy-to-set-up C++23 learning environment in a Dev Container. It works on Linux, macOS, and WSL with Docker. If you are on Windows or macOS and have no interest in installing Docker, see [WINDOWS_SETUP](doc/WINDOWS_SETUP.md) or [MACOS_SETUP](doc/MACOS_SETUP.md). Otherwise, follow the steps below.
 
-The Dev Container uses Debian Forky's default **Clang and libc++** (currently 21). Native installations use the newest Clang 21+ available on `PATH` and its matching libc++; `init.sh` on Linux/macOS and `init.ps1` on Windows record that compiler so the modules and your code are always built by the same version.
+The Dev Container uses Debian Forky's default **Clang and libc++** (currently 21). Native installations use the newest Clang 18+ available on `PATH` and its matching libc++; `init.sh` on Linux/macOS and `init.ps1` on Windows record that compiler so the modules and your code are always built by the same version.
 
 ## Set up the environment on recent Linux distributions
 
-If your Linux distribution provides **Clang 21+**, `clangd`, and the matching libc++ development package, Docker is not required. Install them and run `./init.sh`; the `std`, `std.compat`, and `PPP` modules are compiled locally.
+If your Linux distribution provides **Clang 18+**, `clangd`, and the matching libc++ development package, Docker is not required. Ubuntu 24.04 LTS (Clang 18) and Debian 13 (Clang 19) are the earliest releases whose default `clang` package meets this requirement. Install the packages and run `./init.sh`; the `std`, `std.compat`, and `PPP` modules are compiled locally.
 
 ## Set up the environment
 

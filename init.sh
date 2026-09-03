@@ -20,7 +20,7 @@ while IFS= read -r candidate; do
     candidate_version=$("$candidate_path" --version 2>/dev/null | head -n1 | grep -oE '[0-9]+(\.[0-9]+)*' | head -n1 || true)
     candidate_major=${candidate_version%%.*}
     [[ "$candidate_major" =~ ^[0-9]+$ ]] || continue
-    if (( candidate_major >= 21 && candidate_major > clang_major )); then
+    if (( candidate_major >= 18 && candidate_major > clang_major )); then
         PPP_CXX=$candidate_path
         clang_version=$candidate_version
         clang_major=$candidate_major
@@ -38,12 +38,12 @@ done < <(
 )
 
 if [ -z "$PPP_CXX" ]; then
-    echo "clang++ 21 or newer is required (see README)" >&2
+    echo "clang++ 18 or newer is required (see README)" >&2
     exit 1
 fi
 
 echo "Detected toolchain:"
-echo "  $PPP_CXX $clang_version (requires clang++ 21+)"
+echo "  $PPP_CXX $clang_version (requires clang++ 18+)"
 
 mkdir -p PPP
 

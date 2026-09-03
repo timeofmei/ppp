@@ -2,7 +2,7 @@
 
 This guide is for macOS users who do **not** want to use Docker. It sets up a native Homebrew toolchain for the PPP3e code in this repository.
 
-The project needs **Clang 21+ and its matching libc++** to provide and compile the `std` / `std.compat` modules (and include `clangd` for IDE support).
+The project needs **Clang 18+ and its matching libc++** to provide and compile the `std` / `std.compat` modules (and include `clangd` for IDE support).
 
 > [!WARNING]
 > Apple's own Clang (from Xcode Command Line Tools) is **too old** for this project (it tracks roughly LLVM 16/17). Install Homebrew LLVM instead.
@@ -35,7 +35,7 @@ brew install llvm
 Verify the toolchain:
 
 ```bash
-"$(brew --prefix llvm)/bin/clang++" --version  # clang version 21 or newer
+"$(brew --prefix llvm)/bin/clang++" --version  # clang version 18 or newer
 ```
 
 ## 4. Build the modules
