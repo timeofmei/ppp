@@ -1,8 +1,0 @@
-[
-  {
-    "key": "ctrl+alt+n",
-    "command": "workbench.action.tasks.test",
-    "args": "C++: build & run",
-    "when": "editorTextFocus && editorLangId == cpp"
-  }
-]

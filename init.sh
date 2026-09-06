@@ -78,12 +78,3 @@ fi
 "$PPP_CXX" -std=c++23 -stdlib=libc++ -x c++-module -c "$std_compat_source" -Wno-reserved-module-identifier -fprebuilt-module-path=.modules -fmodule-output=.modules/std.compat.pcm -o .modules/std.compat.o
 "$PPP_CXX" -std=c++23 -stdlib=libc++ -x c++-module -c PPP/PPP.ixx -fprebuilt-module-path=.modules -fmodule-output=.modules/PPP.pcm -o .modules/PPP.o
 printf '%s\n' "$PPP_CXX" > .modules/compiler.path
-
-# Install the workspace keybinding into VS Code's per-user keybindings.json.
-# VS Code ignores workspace-level keybindings (.vscode/keybindings.json), so a
-# tracked copy is placed where VS Code actually reads it (Dev Container / Remote only).
-if [ -d "$HOME/.vscode-server" ]; then
-    mkdir -p "$HOME/.vscode-server/data/User"
-    cp .devcontainer/keybindings.json "$HOME/.vscode-server/data/User/keybindings.json"
-    echo "Installed keybindings -> $HOME/.vscode-server/data/User/keybindings.json"
-fi

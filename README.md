@@ -52,7 +52,32 @@ c1/hello.out
 
 ## VS Code shortcuts
 
-- **`Ctrl+Alt+N`** — compile & run the current `.cpp` file (`C++: build & run` task)
-- **`Ctrl+Shift+B`** — compile only (`C++: build` task)
+VS Code does not support repository-level keyboard shortcuts. Run **Preferences: Open Keyboard Shortcuts (JSON)** and add the entry for your platform inside the existing array.
 
-Both are installed automatically by `init.sh` inside the Dev Container.
+### Windows and Linux
+
+```json
+{
+  "key": "ctrl+alt+n",
+  "command": "workbench.action.tasks.runTask",
+  "args": "C++: build & run",
+  "when": "editorTextFocus && editorLangId == cpp"
+}
+```
+
+- **`Ctrl+Alt+N`** — compile and run
+- **`Ctrl+Shift+B`** — compile only (VS Code default)
+
+### macOS
+
+```json
+{
+  "key": "cmd+alt+n",
+  "command": "workbench.action.tasks.runTask",
+  "args": "C++: build & run",
+  "when": "editorTextFocus && editorLangId == cpp"
+}
+```
+
+- **`Cmd+Option+N`** — compile and run
+- **`Cmd+Shift+B`** — compile only (VS Code default)
