@@ -1,15 +1,23 @@
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-$command = Get-Command clang++.exe -ErrorAction SilentlyContinue
-if (-not $command) {
-    throw "clang++ 18 or newer is required (see doc/WINDOWS_SETUP.md)"
+$compiler = $null
+$versionLine = $null
+$clangMajor = 0
+foreach ($candidate in (Get-Command clang++.exe, clang++-*.exe -All -ErrorAction SilentlyContinue)) {
+    $candidateVersionLine = (& $candidate.Source --version 2>$null | Select-Object -First 1)
+    if ($candidateVersionLine -match "version\s+(\d+)(?:\.\d+)*") {
+        $candidateMajor = [int]$Matches[1]
+        if ($candidateMajor -ge 18 -and $candidateMajor -gt $clangMajor) {
+            $compiler = $candidate.Source
+            $versionLine = $candidateVersionLine
+            $clangMajor = $candidateMajor
+        }
+    }
 }
 
-$compiler = $command.Source
-$versionLine = (& $compiler --version | Select-Object -First 1)
-if ($versionLine -notmatch "version\s+(\d+)(?:\.\d+)*" -or [int]$Matches[1] -lt 18) {
-    throw "$versionLine is too old; PPP requires clang++ 18 or newer"
+if (-not $compiler) {
+    throw "clang++ 18 or newer is required (see doc/WINDOWS_SETUP.md)"
 }
 
 $moduleSources = [IO.Path]::GetFullPath(

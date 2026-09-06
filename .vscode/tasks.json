@@ -29,8 +29,11 @@
         "cwd": "${workspaceFolder}"
       },
       "windows": {
-        "command": "clang++",
+        "command": "powershell",
         "args": [
+          "-NoProfile",
+          "-Command",
+          "$compiler = (Get-Content -Raw '.modules/compiler.path').Trim(); & $compiler",
           "-std=c++23",
           "-stdlib=libc++",
           "-Wall",
