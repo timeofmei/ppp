@@ -72,7 +72,7 @@ powershell -ExecutionPolicy Bypass -File .\init.ps1
 $cxx = (Get-Content -Raw .modules\compiler.path).Trim()
 
 & $cxx -std=c++23 -stdlib=libc++ -IPPP `
-    -fprebuilt-module-path=.modules `
+    '-fprebuilt-module-path=.modules' `
     c1\hello.cpp .modules\std.obj .modules\PPP.obj `
     -o c1\hello.exe
 
