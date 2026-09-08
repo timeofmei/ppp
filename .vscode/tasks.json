@@ -43,7 +43,7 @@
           "-fsanitize=address,undefined",
           "-fno-omit-frame-pointer",
           "-IPPP",
-          "-fprebuilt-module-path=.modules",
+          "'-fprebuilt-module-path=.modules'",
           "${relativeFile}",
           ".modules/std.obj",
           ".modules/PPP.obj",
