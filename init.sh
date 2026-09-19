@@ -45,19 +45,12 @@ fi
 echo "Detected toolchain:"
 echo "  $PPP_CXX $clang_version (requires clang++ 18+)"
 
-mkdir -p PPP .clangd-include
-
-curl -fL https://www.stroustrup.com/PPP.h -o PPP/PPP.h
-curl -fL https://www.stroustrup.com/PPPheaders.h -o PPP/PPPheaders.h
-curl -fL https://www.stroustrup.com/PPP_support.h -o PPP/PPP_support.h
-curl -fL https://www.stroustrup.com/PPP.ixx -o PPP/PPP.ixx
-awk 'BEGIN {print "#ifndef PPP_EXPORT\nimport std;\n#define PPP_EXPORT\n#endif\n"}
-     {gsub(/operator\[\]\(size_t/, "operator[](std::size_t"); print}' PPP/PPP_support.h > PPP/PPP_support.h.tmp
-mv PPP/PPP_support.h.tmp PPP/PPP_support.h
-
-mkdir -p .modules
-
-modules_json="$("$PPP_CXX" -print-resource-dir)/../../libc++.modules.json"
+# Ask the selected compiler to search its library directories (including lib64).
+modules_json=$("$PPP_CXX" -stdlib=libc++ -print-file-name=libc++.modules.json)
+if [ ! -f "$modules_json" ]; then
+    # LLVM installations such as Homebrew may keep the manifest here.
+    modules_json="$("$PPP_CXX" -print-resource-dir)/../../libc++.modules.json"
+fi
 if [ ! -f "$modules_json" ]; then
     echo "libc++ standard modules are missing; install the libc++ development package matching Clang $clang_major" >&2
     exit 1
@@ -73,6 +66,18 @@ if [ ! -f "$std_source" ] || [ ! -f "$std_compat_source" ]; then
     echo "libc++ std/std.compat module sources are missing; reinstall the libc++ development package matching Clang $clang_major" >&2
     exit 1
 fi
+
+mkdir -p PPP .clangd-include
+
+curl -fL https://www.stroustrup.com/PPP.h -o PPP/PPP.h
+curl -fL https://www.stroustrup.com/PPPheaders.h -o PPP/PPPheaders.h
+curl -fL https://www.stroustrup.com/PPP_support.h -o PPP/PPP_support.h
+curl -fL https://www.stroustrup.com/PPP.ixx -o PPP/PPP.ixx
+awk 'BEGIN {print "#ifndef PPP_EXPORT\nimport std;\n#define PPP_EXPORT\n#endif\n"}
+     {gsub(/operator\[\]\(size_t/, "operator[](std::size_t"); print}' PPP/PPP_support.h > PPP/PPP_support.h.tmp
+mv PPP/PPP_support.h.tmp PPP/PPP_support.h
+
+mkdir -p .modules
 
 "$PPP_CXX" -std=c++23 -stdlib=libc++ -x c++-module -c "$std_source" -Wno-reserved-module-identifier -fmodule-output=.modules/std.pcm -o .modules/std.o
 "$PPP_CXX" -std=c++23 -stdlib=libc++ -x c++-module -c "$std_compat_source" -Wno-reserved-module-identifier -fprebuilt-module-path=.modules -fmodule-output=.modules/std.compat.pcm -o .modules/std.compat.o
