@@ -1,0 +1,30 @@
+[
+  {
+    "label": "C++: build",
+    "command": "\"$(<.modules/compiler.path)\" -std=c++23 -stdlib=libc++ -Wall -Wextra -Wpedantic -g -fsanitize=address,undefined -fno-omit-frame-pointer -IPPP -fprebuilt-module-path=.modules \"$ZED_RELATIVE_FILE\" .modules/std.o .modules/PPP.o -o \"$ZED_DIRNAME/$ZED_STEM.out\"",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "shell": {
+      "program": "bash"
+    },
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "show_summary": false,
+    "show_command": false,
+    "save": "all"
+  },
+  {
+    "label": "C++: build & run",
+    "command": "\"$(<.modules/compiler.path)\" -std=c++23 -stdlib=libc++ -Wall -Wextra -Wpedantic -g -fsanitize=address,undefined -fno-omit-frame-pointer -IPPP -fprebuilt-module-path=.modules \"$ZED_RELATIVE_FILE\" .modules/std.o .modules/PPP.o -o \"$ZED_DIRNAME/$ZED_STEM.out\" && exec \"$ZED_DIRNAME/$ZED_STEM.out\"",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "shell": {
+      "program": "bash"
+    },
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "show_summary": false,
+    "show_command": false,
+    "save": "all"
+  }
+]
